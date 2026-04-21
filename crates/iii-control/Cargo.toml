@@ -1,13 +1,15 @@
 [package]
-name = "iii-tor"
+name = "iii-control"
 version.workspace = true
 edition.workspace = true
 
 [dependencies]
 tokio.workspace = true
+tonic.workspace = true
+prost.workspace = true
 iii-core.workspace = true
-tracing.workspace = true
 anyhow.workspace = true
-tempfile.workspace = true
-tokio-util.workspace = true
-libtor-sys = { workspace = true }
+tracing.workspace = true
+
+[build-dependencies]
+tonic-build = "0.11"
