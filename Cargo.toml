@@ -55,7 +55,7 @@ netlink-packet-route = "0.19"
 netlink-proto = "0.11"
 socks5-proto = "0.3"
 tokio-io-timeout = "1.2"
-smoltcp = { version = "0.11", default-features = false, features = ["std", "log", "proto-ipv4", "socket-tcp"] }
+smoltcp = { version = "0.11", default-features = false, features = ["std", "log", "proto-ipv4", "socket-tcp", "medium-ip"] }
 libtor-sys = { git = "https://github.com/MagicalBitcoin/libtor-sys", branch = "master" }  # or use a stable fork
 
 # Internal Crates
