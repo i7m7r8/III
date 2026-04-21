@@ -1,11 +1,11 @@
-use std::sync::Arc;
-use tokio::net::{TcpListener, TcpStream};
-use tokio_rustls::TlsConnector;
+use anyhow::{Context, Result};
 use rustls::ClientConfig;
 use rustls_pki_types::ServerName;
-use anyhow::{Result, Context};
-use tracing::{info, error};
+use std::sync::Arc;
 use tokio::io::{copy_bidirectional, AsyncReadExt, AsyncWriteExt};
+use tokio::net::{TcpListener, TcpStream};
+use tokio_rustls::TlsConnector;
+use tracing::{error, info};
 
 pub struct SniProxy {
     listen_addr: String,
@@ -18,7 +18,7 @@ impl SniProxy {
     pub fn new(listen_addr: String, sni_domain: String, target_relay: String) -> Result<Self> {
         let mut root_store = rustls::RootCertStore::empty();
         root_store.extend(webpki_roots::TLS_SERVER_ROOTS.iter().cloned());
-        
+
         let mut config = ClientConfig::builder()
             .with_root_certificates(root_store)
             .with_no_client_auth();
@@ -43,7 +43,9 @@ impl SniProxy {
             let tls_config = self.tls_config.clone();
 
             tokio::spawn(async move {
-                if let Err(e) = Self::handle_client(client_stream, sni_domain, target_relay, tls_config).await {
+                if let Err(e) =
+                    Self::handle_client(client_stream, sni_domain, target_relay, tls_config).await
+                {
                     error!("Error handling client {}: {}", addr, e);
                 }
             });
@@ -54,7 +56,7 @@ impl SniProxy {
         mut client_stream: TcpStream,
         sni_domain: String,
         target_relay: String,
-        tls_config: Arc<ClientConfig>
+        tls_config: Arc<ClientConfig>,
     ) -> Result<()> {
         // 1. SOCKS5 Handshake
         let mut buf = [0u8; 2];
@@ -71,10 +73,11 @@ impl SniProxy {
         // 2. SOCKS5 Request
         let mut req_header = [0u8; 4];
         client_stream.read_exact(&mut req_header).await?;
-        if req_header[1] != 0x01 { // Only CONNECT
+        if req_header[1] != 0x01 {
+            // Only CONNECT
             return Err(anyhow::anyhow!("Only SOCKS5 CONNECT is supported"));
         }
-        
+
         // Skip address parsing for now, we wrap everything to the target relay
         // Production grade should parse target to support multiple relays or direct SNI
         let mut addr_buf = match req_header[3] {
@@ -91,23 +94,28 @@ impl SniProxy {
         client_stream.read_exact(&mut port_buf).await?;
 
         // Reply success
-        client_stream.write_all(&[0x05, 0x00, 0x00, 0x01, 0, 0, 0, 0, 0, 0]).await?;
+        client_stream
+            .write_all(&[0x05, 0x00, 0x00, 0x01, 0, 0, 0, 0, 0, 0])
+            .await?;
 
         // 3. Wrap outgoing connection to relay in TLS with SNI
         let connector = TlsConnector::from(tls_config);
-        let relay_tcp = TcpStream::connect(&target_relay).await
+        let relay_tcp = TcpStream::connect(&target_relay)
+            .await
             .context("Failed to connect to SNI relay")?;
-        
+
         let server_name = ServerName::try_from(sni_domain.as_str())
             .map_err(|_| anyhow::anyhow!("Invalid SNI domain"))?
             .to_owned();
 
-        let mut relay_tls = connector.connect(server_name, relay_tcp).await
+        let mut relay_tls = connector
+            .connect(server_name, relay_tcp)
+            .await
             .context("Failed TLS handshake with SNI relay")?;
 
         // 4. Bidirectional copy
         copy_bidirectional(&mut client_stream, &mut relay_tls).await?;
-        
+
         Ok(())
     }
 }

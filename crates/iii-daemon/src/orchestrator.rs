@@ -1,11 +1,11 @@
-use std::sync::Arc;
-use anyhow::{Result, Context};
+use anyhow::{Context, Result};
 use iii_core::{AppState, Mode};
+use iii_i2p::{I2pConfig, I2pInstance};
 use iii_sni::SniProxy;
-use iii_tor::{TorInstance, TorConfig};
-use iii_i2p::{I2pInstance, I2pConfig};
-use tracing::{info, error};
+use iii_tor::{TorConfig, TorInstance};
+use std::sync::Arc;
 use tokio::sync::Mutex;
+use tracing::{error, info};
 
 pub struct ChainManager {
     state: Arc<AppState>,
@@ -15,7 +15,7 @@ pub struct ChainManager {
 
 impl ChainManager {
     pub fn new(state: Arc<AppState>) -> Self {
-        Self { 
+        Self {
             state,
             tor: Arc::new(Mutex::new(None)),
             i2p: Arc::new(Mutex::new(None)),
@@ -42,12 +42,8 @@ impl ChainManager {
         info!("Starting chain with mode: {:?}", mode);
 
         // 1. Always start SNI Proxy
-        let sni_proxy = SniProxy::new(
-            "127.0.0.1:10000".to_string(),
-            sni_domain,
-            target_relay
-        )?;
-        
+        let sni_proxy = SniProxy::new("127.0.0.1:10000".to_string(), sni_domain, target_relay)?;
+
         tokio::spawn(async move {
             if let Err(e) = sni_proxy.run().await {
                 error!("SNI Proxy failed: {}", e);
@@ -66,7 +62,8 @@ impl ChainManager {
                     control_port: 9051,
                     data_dir: tor.data_dir(),
                     upstream_proxy: Some(("127.0.0.1".to_string(), 10000)),
-                }).await?;
+                })
+                .await?;
                 *self.tor.lock().await = Some(tor);
             }
             Mode::SniI2p => {
@@ -77,7 +74,8 @@ impl ChainManager {
                     socks_proxy_port: 4447,
                     data_dir: i2p.data_dir(),
                     upstream_proxy: Some(("127.0.0.1".to_string(), 10000)),
-                }).await?;
+                })
+                .await?;
                 *self.i2p.lock().await = Some(i2p);
             }
             Mode::SniTorI2p => {
@@ -88,7 +86,8 @@ impl ChainManager {
                     socks_proxy_port: 4447,
                     data_dir: i2p.data_dir(),
                     upstream_proxy: Some(("127.0.0.1".to_string(), 10000)),
-                }).await?;
+                })
+                .await?;
                 *self.i2p.lock().await = Some(i2p);
 
                 let tor = TorInstance::new(None)?;
@@ -97,7 +96,8 @@ impl ChainManager {
                     control_port: 9051,
                     data_dir: tor.data_dir(),
                     upstream_proxy: Some(("127.0.0.1".to_string(), 4447)),
-                }).await?;
+                })
+                .await?;
                 *self.tor.lock().await = Some(tor);
             }
             Mode::SniI2pTor => {
@@ -108,7 +108,8 @@ impl ChainManager {
                     control_port: 9051,
                     data_dir: tor.data_dir(),
                     upstream_proxy: Some(("127.0.0.1".to_string(), 10000)),
-                }).await?;
+                })
+                .await?;
                 *self.tor.lock().await = Some(tor);
 
                 let i2p = I2pInstance::new(None)?;
@@ -117,7 +118,8 @@ impl ChainManager {
                     socks_proxy_port: 4447,
                     data_dir: i2p.data_dir(),
                     upstream_proxy: Some(("127.0.0.1".to_string(), 9050)),
-                }).await?;
+                })
+                .await?;
                 *self.i2p.lock().await = Some(i2p);
             }
         }

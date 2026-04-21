@@ -4,7 +4,7 @@ use std::path::PathBuf;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct IIIConfig {
     pub sni_domain: String,
-    pub mode: String, // "tor", "i2p", "both"
+    pub mode: String,  // "tor", "i2p", "both"
     pub order: String, // "i2p_then_tor" or "tor_then_i2p"
     pub killswitch_enabled: bool,
     pub dns_through_tunnel: bool,
@@ -19,7 +19,9 @@ impl Default for IIIConfig {
             order: "i2p_then_tor".to_string(),
             killswitch_enabled: true,
             dns_through_tunnel: true,
-            data_dir: dirs::data_local_dir().unwrap_or_else(|| PathBuf::from(".")).join("iii"),
+            data_dir: dirs::data_local_dir()
+                .unwrap_or_else(|| PathBuf::from("."))
+                .join("iii"),
         }
     }
 }

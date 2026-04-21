@@ -13,7 +13,7 @@ impl KillSwitch {
 
     pub async fn enable(&self) -> Result<()> {
         info!("Enabling nftables killswitch (Fail-Closed)");
-        
+
         // 1. Create the table
         let commands = [
             "nft add table inet iii_killswitch",
@@ -40,7 +40,13 @@ impl KillSwitch {
 
     pub async fn disable(&self) -> Result<()> {
         info!("Disabling killswitch");
-        Command::new("nft").arg("delete").arg("table").arg("inet").arg("iii_killswitch").status().await?;
+        Command::new("nft")
+            .arg("delete")
+            .arg("table")
+            .arg("inet")
+            .arg("iii_killswitch")
+            .status()
+            .await?;
         Ok(())
     }
 }

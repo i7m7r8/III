@@ -1,12 +1,12 @@
-pub mod tun;
 pub mod killswitch;
 pub mod router;
+pub mod tun;
 
-use std::sync::Arc;
+use anyhow::{Context, Result};
 use iii_core::AppState;
-use anyhow::{Result, Context};
-use tracing::{info, error};
 use killswitch::KillSwitch;
+use std::sync::Arc;
+use tracing::{error, info};
 
 pub struct VpnController {
     state: Arc<AppState>,
@@ -15,7 +15,7 @@ pub struct VpnController {
 
 impl VpnController {
     pub fn new(state: Arc<AppState>) -> Self {
-        Self { 
+        Self {
             state,
             killswitch: Arc::new(tokio::sync::Mutex::new(None)),
         }
@@ -27,7 +27,7 @@ impl VpnController {
         // 1. Initialize Killswitch
         let target_relay = self.state.target_relay.read().await.clone();
         let relay_ip = target_relay.split(':').next().unwrap_or("").to_string();
-        
+
         let ks = KillSwitch::new(relay_ip);
         ks.enable().await.context("Failed to enable killswitch")?;
         *self.killswitch.lock().await = Some(ks);
@@ -44,7 +44,7 @@ impl VpnController {
 
             let _dev = tun::create(&config).context("Failed to create TUN device")?;
             info!("TUN device 'iii0' created (10.0.0.1)");
-            
+
             // Production: Start packet forwarder task here
         }
 

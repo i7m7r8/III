@@ -1,5 +1,5 @@
-pub mod error;
 pub mod config;
+pub mod error;
 pub mod tunnel;
 
 use std::sync::Arc;

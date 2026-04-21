@@ -24,7 +24,11 @@ impl eframe::App for MyApp {
         egui::CentralPanel::default().show(ctx, |ui| {
             ui.vertical_centered(|ui| {
                 ui.add_space(10.0);
-                ui.heading(egui::RichText::new("III MILITARY‑GRADE VPN").strong().size(24.0));
+                ui.heading(
+                    egui::RichText::new("III MILITARY‑GRADE VPN")
+                        .strong()
+                        .size(24.0),
+                );
                 ui.label(egui::RichText::new("ANONYMITY VIA SNI + TOR + I2P").italics());
                 ui.add_space(20.0);
             });
@@ -32,7 +36,7 @@ impl eframe::App for MyApp {
             ui.group(|ui| {
                 ui.label("CORE SETTINGS");
                 ui.separator();
-                
+
                 ui.horizontal(|ui| {
                     ui.label("SNI Domain:  ");
                     ui.text_edit_singleline(&mut self.sni_domain);
@@ -59,17 +63,36 @@ impl eframe::App for MyApp {
 
             ui.add_space(20.0);
 
-            let btn_text = if self.connected { "TERMINATE CONNECTION" } else { "ESTABLISH SECURE TUNNEL" };
-            let btn_color = if self.connected { egui::Color32::from_rgb(200, 0, 0) } else { egui::Color32::from_rgb(0, 150, 0) };
+            let btn_text = if self.connected {
+                "TERMINATE CONNECTION"
+            } else {
+                "ESTABLISH SECURE TUNNEL"
+            };
+            let btn_color = if self.connected {
+                egui::Color32::from_rgb(200, 0, 0)
+            } else {
+                egui::Color32::from_rgb(0, 150, 0)
+            };
 
             ui.vertical_centered(|ui| {
-                if ui.add(egui::Button::new(egui::RichText::new(btn_text).strong().color(egui::Color32::WHITE)).fill(btn_color).min_size(egui::vec2(200.0, 40.0))).clicked() {
+                if ui
+                    .add(
+                        egui::Button::new(
+                            egui::RichText::new(btn_text)
+                                .strong()
+                                .color(egui::Color32::WHITE),
+                        )
+                        .fill(btn_color)
+                        .min_size(egui::vec2(200.0, 40.0)),
+                    )
+                    .clicked()
+                {
                     self.connected = !self.connected;
                 }
             });
 
             ui.add_space(20.0);
-            
+
             ui.group(|ui| {
                 ui.horizontal(|ui| {
                     ui.label("STATUS:");
@@ -96,5 +119,11 @@ fn android_main(app: android_activity::AndroidApp) {
     android_logger::init_once(Config::default().with_max_level(log::LevelFilter::Info));
 
     let options = eframe::NativeOptions::default();
-    eframe::run_android("III VPN", options, app, Box::new(|_cc| Box::new(MyApp::default()))).unwrap();
+    eframe::run_android(
+        "III VPN",
+        options,
+        app,
+        Box::new(|_cc| Box::new(MyApp::default())),
+    )
+    .unwrap();
 }
