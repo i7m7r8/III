@@ -2,6 +2,7 @@ use std::sync::Arc;
 use tokio::io::{AsyncRead, AsyncWrite};
 
 /// A generic tunnel that can be chained.
+#[allow(async_fn_in_trait)]
 pub trait Tunnel: Send + Sync {
     type Stream: AsyncRead + AsyncWrite + Unpin + Send;
     async fn connect(&self, target: &str) -> Result<Self::Stream, crate::error::IIIError>;
