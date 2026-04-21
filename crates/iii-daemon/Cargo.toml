@@ -3,6 +3,13 @@ name = "iii-daemon"
 version.workspace = true
 edition.workspace = true
 
+[lib]
+path = "src/lib.rs"
+
+[[bin]]
+name = "iii-daemon"
+path = "src/main.rs"
+
 [dependencies]
 tokio.workspace = true
 iii-core.workspace = true

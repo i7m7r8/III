@@ -1,9 +1,8 @@
-mod orchestrator;
-
 use iii_core::AppState;
+use iii_daemon::orchestrator::ChainManager;
 use iii_vpn::VpnController;
-use orchestrator::ChainManager;
 use std::sync::Arc;
+use tracing::info;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -29,5 +28,3 @@ async fn main() -> anyhow::Result<()> {
 
     Ok(())
 }
-
-use tracing::info;
