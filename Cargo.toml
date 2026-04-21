@@ -55,3 +55,13 @@ socks5-proto = "0.3"
 tokio-io-timeout = "1.2"
 smoltcp = { version = "0.11", default-features = false, features = ["std", "log", "proto-ipv4", "socket-tcp"] }
 libtor-sys = { git = "https://github.com/teor2345/libtor-sys", branch = "main" }  # or use a stable fork
+
+# Internal Crates
+iii-core = { path = "crates/iii-core" }
+iii-sni = { path = "crates/iii-sni" }
+iii-tor = { path = "crates/iii-tor" }
+iii-i2p = { path = "crates/iii-i2p" }
+iii-vpn = { path = "crates/iii-vpn" }
+iii-control = { path = "crates/iii-control" }
+iii-daemon = { path = "crates/iii-daemon" }
+iii-ui = { path = "crates/iii-ui" }
