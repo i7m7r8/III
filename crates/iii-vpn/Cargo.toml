@@ -6,10 +6,14 @@ edition.workspace = true
 [dependencies]
 tokio.workspace = true
 tun.workspace = true
-wintun.workspace = true
-nix.workspace = true
-netlink-packet-route.workspace = true
 iii-core.workspace = true
 tracing.workspace = true
 smoltcp.workspace = true
 anyhow.workspace = true
+
+[target.'cfg(windows)'.dependencies]
+wintun.workspace = true
+
+[target.'cfg(unix)'.dependencies]
+nix.workspace = true
+netlink-packet-route.workspace = true
