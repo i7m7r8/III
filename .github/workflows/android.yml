@@ -18,12 +18,9 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Set up Rust
-        uses: actions-rs/toolchain@v1
+      - uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: stable
-          target: aarch64-linux-android
-          override: true
+          targets: aarch64-linux-android
 
       - name: Install cargo-ndk
         run: cargo install cargo-ndk
@@ -39,8 +36,6 @@ jobs:
 
       - name: Package APK (Minimal Gradle Template)
         run: |
-          # In a full production setup, we would trigger a Gradle build here.
-          # For this implementation, we ensure the .so files are ready for packaging.
           mkdir -p build/outputs/apk/
           cp target/aarch64-linux-android/release/libiii_ui.so build/outputs/apk/III_v1.0_aarch64.so
           echo "Production libraries generated and ready for APK packaging."
