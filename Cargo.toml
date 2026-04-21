@@ -50,7 +50,7 @@ eframe = { version = "0.27", features = ["persistence"] }
 egui_dock = "0.10"
 tun = "0.5"
 wintun = "0.3"
-android_vpn_service = "0.2"
+jni = "0.21"
 winapi = { version = "0.3", features = ["fwpmk", "iphlpapi", "netioapi", "windows"] }
 netlink-packet-route = "0.19"
 netlink-proto = "0.11"

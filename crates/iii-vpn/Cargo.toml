@@ -7,7 +7,6 @@ edition.workspace = true
 tokio.workspace = true
 tun.workspace = true
 wintun.workspace = true
-android_vpn_service.workspace = true
 nix.workspace = true
 netlink-packet-route.workspace = true
 winapi.workspace = true
