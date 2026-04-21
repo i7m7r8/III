@@ -1,4 +1,4 @@
-use anyhow::{Context, Result};
+use anyhow::Result;
 use iii_core::{AppState, Mode};
 use iii_i2p::{I2pConfig, I2pInstance};
 use iii_sni::SniProxy;
