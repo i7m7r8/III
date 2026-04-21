@@ -51,7 +51,6 @@ egui_dock = "0.10"
 tun = "0.5"
 wintun = "0.3"
 jni = "0.21"
-winapi = { version = "0.3", features = ["fwpmk", "iphlpapi", "netioapi", "windows"] }
 netlink-packet-route = "0.19"
 netlink-proto = "0.11"
 socks5-proto = "0.3"

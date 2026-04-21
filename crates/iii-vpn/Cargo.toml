@@ -9,7 +9,6 @@ tun.workspace = true
 wintun.workspace = true
 nix.workspace = true
 netlink-packet-route.workspace = true
-winapi.workspace = true
 iii-core.workspace = true
 tracing.workspace = true
 smoltcp.workspace = true
