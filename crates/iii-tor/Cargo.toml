@@ -1,0 +1,12 @@
+[package]
+name = "iii-tor"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+arti-client.workspace = true
+tor-rtcompat.workspace = true
+tokio.workspace = true
+iii-core.workspace = true
+tracing.workspace = true
+anyhow.workspace = true

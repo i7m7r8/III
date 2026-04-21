@@ -1,0 +1,15 @@
+[package]
+name = "iii-i2p"
+version.workspace = true
+edition.workspace = true
+build = "build.rs"
+
+[dependencies]
+libc.workspace = true
+cxx.workspace = true
+tokio.workspace = true
+iii-core.workspace = true
+tracing.workspace = true
+
+[build-dependencies]
+cxx-build.workspace = true

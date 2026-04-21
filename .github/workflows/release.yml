@@ -1,0 +1,46 @@
+name: Release III
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+    steps:
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          release_name: III ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+
+  build-and-upload:
+    needs: create-release
+    uses: ./.github/workflows/build.yml
+    secrets: inherit
+
+  attach-assets:
+    needs: [create-release, build-and-upload]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      - name: Upload to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_path: artifacts/iii-linux/iii-daemon
+          asset_name: iii-linux
+          asset_content_type: application/octet-stream
+      # Repeat for windows and android

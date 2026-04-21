@@ -1,0 +1,17 @@
+/target
+**/*.rs.bk
+*.swp
+.idea
+.vscode
+*.apk
+*.exe
+*.deb
+*.AppImage
+*.msi
+*.pdb
+*.dSYM
+*.log
+.env
+.rustup
+.cargo/registry
+.cargo/git

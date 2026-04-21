@@ -1,0 +1,23 @@
+name: Security Audit
+
+on:
+  schedule:
+    - cron: '0 2 * * 1'  # Weekly
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rs/audit-check@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install kani
+        run: |
+          cargo install kani-verifier
+          kani --version
+      - name: Run formal verification (sni tunnel)
+        run: |
+          cd crates/iii-sni
+          cargo kani --enable-unstable --harness proof
