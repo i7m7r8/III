@@ -1,12 +1,12 @@
 pub mod killswitch;
 pub mod router;
-pub mod tun;
+pub mod tun_management;
 
 use anyhow::{Context, Result};
 use iii_core::AppState;
 use killswitch::KillSwitch;
 use std::sync::Arc;
-use tracing::{error, info};
+use tracing::info;
 
 pub struct VpnController {
     state: Arc<AppState>,
@@ -35,14 +35,15 @@ impl VpnController {
         // 2. Create TUN Interface
         #[cfg(target_os = "linux")]
         {
-            let mut config = tun::Configuration::default();
+            // Use absolute path for the 'tun' crate to avoid shadowing
+            let mut config = ::tun::Configuration::default();
             config
                 .name("iii0")
                 .address("10.0.0.1")
                 .netmask("255.255.255.0")
                 .up();
 
-            let _dev = tun::create(&config).context("Failed to create TUN device")?;
+            let _dev = ::tun::create(&config).context("Failed to create TUN device")?;
             info!("TUN device 'iii0' created (10.0.0.1)");
 
             // Production: Start packet forwarder task here
