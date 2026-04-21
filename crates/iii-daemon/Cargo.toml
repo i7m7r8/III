@@ -1,0 +1,17 @@
+[package]
+name = "iii-daemon"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+tokio.workspace = true
+iii-core.workspace = true
+iii-vpn.workspace = true
+iii-tor.workspace = true
+iii-i2p.workspace = true
+iii-sni.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+anyhow.workspace = true
+tonic.workspace = true
+prost.workspace = true

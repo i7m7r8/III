@@ -13,3 +13,5 @@ netlink-packet-route.workspace = true
 winapi.workspace = true
 iii-core.workspace = true
 tracing.workspace = true
+smoltcp.workspace = true
+anyhow.workspace = true

@@ -1,0 +1,25 @@
+[package]
+name = "iii-ui"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+tokio.workspace = true
+iii-core.workspace = true
+iii-daemon.workspace = true
+tracing.workspace = true
+anyhow.workspace = true
+egui.workspace = true
+eframe.workspace = true
+egui_dock.workspace = true
+
+[target.'cfg(target_os = "android")'.dependencies]
+android_logger = "0.13"
+android-activity = { version = "0.5", features = ["native-activity"] }
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[[bin]]
+name = "iii-ui"
+path = "src/main.rs"

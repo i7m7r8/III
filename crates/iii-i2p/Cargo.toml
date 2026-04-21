@@ -2,14 +2,11 @@
 name = "iii-i2p"
 version.workspace = true
 edition.workspace = true
-build = "build.rs"
 
 [dependencies]
-libc.workspace = true
-cxx.workspace = true
 tokio.workspace = true
 iii-core.workspace = true
 tracing.workspace = true
-
-[build-dependencies]
-cxx-build.workspace = true
+anyhow.workspace = true
+tempfile = "3.10"
+# i2pd-sys would be ideal here if available, or we use a prebuilt binary approach
