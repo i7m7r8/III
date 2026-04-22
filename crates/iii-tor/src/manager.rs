@@ -54,7 +54,7 @@ impl TorInner {
         #[cfg(not(target_os = "android"))]
         let tor_bin = "tor";
 
-        let child = Command::new(&tor_bin)
+        let child = Command::new(tor_bin) // Removed unnecessary borrow &
             .arg("-f")
             .arg(&torrc_path)
             .spawn()
