@@ -70,7 +70,17 @@ impl I2pInstance {
 
         fs::write(&conf_path, conf_content).context("Failed to write i2pd.conf")?;
 
-        let child = Command::new("i2pd")
+        #[cfg(target_os = "android")]
+        let i2pd_bin = {
+            // On Android, we bundle the binary as a shared library or in a specific path
+            // For now, we expect it to be in the same dir as the lib or a known location
+            // A common trick is to name it libi2pd_bin.so to be extracted by Android
+            "i2pd" // Placeholder, should be resolved to absolute path in production
+        };
+        #[cfg(not(target_os = "android"))]
+        let i2pd_bin = "i2pd";
+
+        let child = Command::new(i2pd_bin)
             .arg("--conf")
             .arg(&conf_path)
             .stdout(Stdio::null())
