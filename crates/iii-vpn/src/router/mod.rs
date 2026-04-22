@@ -1,6 +1,6 @@
 use crate::tun_management::TunDevice;
 use anyhow::Result;
-use tracing::{error, info};
+use tracing::info;
 
 pub struct Router {
     tun: TunDevice,

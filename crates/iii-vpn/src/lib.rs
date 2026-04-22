@@ -6,8 +6,7 @@ use anyhow::{Context, Result};
 use iii_core::AppState;
 use killswitch::KillSwitch;
 use std::sync::Arc;
-use tracing::info;
-
+use tracing::{error, info};
 use tun_management::{TunDevice, TunInterface};
 
 pub struct VpnController {
