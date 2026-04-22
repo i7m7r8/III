@@ -78,7 +78,7 @@ impl I2pInstance {
                 "crates/iii-i2p/prebuilt/aarch64-linux-android/i2pd",
                 "./i2pd",
             ];
-            
+
             let mut resolved = "i2pd".to_string();
             for path in &possible_paths {
                 if fs::metadata(path).is_ok() {

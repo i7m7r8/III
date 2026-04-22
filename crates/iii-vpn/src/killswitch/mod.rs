@@ -15,7 +15,7 @@ pub struct KillSwitch {
 
 impl KillSwitch {
     pub fn new(target_relay_ip: String) -> Self {
-        Self { 
+        Self {
             target_relay_ip,
             #[cfg(target_os = "windows")]
             engine_handle: std::sync::Arc::new(tokio::sync::Mutex::new(None)),

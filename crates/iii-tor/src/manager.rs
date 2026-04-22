@@ -1,9 +1,9 @@
-use std::path::PathBuf;
-use std::process::{Command, Child};
-use tokio::sync::Mutex;
-use std::sync::Arc;
-use tracing::{info, error};
 use iii_core::error::IIIError;
+use std::path::PathBuf;
+use std::process::{Child, Command};
+use std::sync::Arc;
+use tokio::sync::Mutex;
+use tracing::{error, info};
 
 pub struct TorInner {
     data_dir: PathBuf,
@@ -30,7 +30,9 @@ impl TorInner {
         let torrc_path = self.data_dir.join("torrc");
         let mut torrc_content = format!(
             "SocksPort {}\nControlPort {}\nDataDirectory {}\n",
-            self.socks_port, self.control_port, self.data_dir.display()
+            self.socks_port,
+            self.control_port,
+            self.data_dir.display()
         );
 
         if let Some((host, port)) = upstream_proxy {
@@ -41,11 +43,7 @@ impl TorInner {
 
         #[cfg(target_os = "android")]
         let tor_bin = {
-            let possible_paths = [
-                "/data/local/tmp/tor",
-                "./tor",
-                "tor",
-            ];
+            let possible_paths = ["/data/local/tmp/tor", "./tor", "tor"];
             let mut resolved = "tor".to_string();
             for path in &possible_paths {
                 if std::fs::metadata(path).is_ok() {

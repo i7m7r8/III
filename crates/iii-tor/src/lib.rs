@@ -1,10 +1,10 @@
-pub mod manager;
 pub mod ffi;
+pub mod manager;
 
 use iii_core::error::IIIError;
 use std::path::PathBuf;
-use tokio::sync::Mutex;
 use std::sync::Arc;
+use tokio::sync::Mutex;
 
 pub struct TorManager {
     inner: Arc<Mutex<manager::TorInner>>,
@@ -13,7 +13,11 @@ pub struct TorManager {
 impl TorManager {
     pub fn new(data_dir: PathBuf, socks_port: u16, control_port: u16) -> Self {
         Self {
-            inner: Arc::new(Mutex::new(manager::TorInner::new(data_dir, socks_port, control_port))),
+            inner: Arc::new(Mutex::new(manager::TorInner::new(
+                data_dir,
+                socks_port,
+                control_port,
+            ))),
         }
     }
 

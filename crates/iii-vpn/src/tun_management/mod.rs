@@ -15,13 +15,10 @@ impl TunInterface {
         #[cfg(target_os = "linux")]
         {
             let mut config = ::tun::Configuration::default();
-            config
-                .name(name)
-                .address(address)
-                .netmask(netmask)
-                .up();
+            config.name(name).address(address).netmask(netmask).up();
 
-            let dev = ::tun::create_as_async(&config).context("Failed to create TUN device on Linux")?;
+            let dev =
+                ::tun::create_as_async(&config).context("Failed to create TUN device on Linux")?;
             info!("TUN device '{}' created ({})", name, address);
             Ok(TunDevice::Linux(dev))
         }
@@ -31,10 +28,10 @@ impl TunInterface {
             let wintun = unsafe { ::wintun::load()? };
             let adapter = ::wintun::Adapter::create(&wintun, "III", name, None)
                 .context("Failed to create Wintun adapter")?;
-            
+
             adapter.set_address(address.parse()?)?;
             adapter.set_netmask(netmask.parse()?)?;
-            
+
             info!("Wintun device '{}' created ({})", name, address);
             Ok(TunDevice::Windows(std::sync::Arc::new(adapter)))
         }

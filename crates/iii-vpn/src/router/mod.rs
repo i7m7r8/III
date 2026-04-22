@@ -1,6 +1,6 @@
 use crate::tun_management::TunDevice;
 use anyhow::Result;
-use tracing::{info, error};
+use tracing::{error, info};
 
 pub struct Router {
     tun: TunDevice,
@@ -13,7 +13,7 @@ impl Router {
 
     pub async fn run(self) -> Result<()> {
         info!("Starting packet router loop...");
-        
+
         match self.tun {
             #[cfg(target_os = "linux")]
             TunDevice::Linux(mut dev) => {
@@ -21,7 +21,9 @@ impl Router {
                 let mut buf = [0u8; 1600];
                 loop {
                     let n = dev.read(&mut buf).await?;
-                    if n == 0 { break; }
+                    if n == 0 {
+                        break;
+                    }
                     let _packet = &buf[..n];
                     // TODO: Process packet with smoltcp and proxy to upstream
                 }
@@ -36,7 +38,7 @@ impl Router {
                 }
             }
         }
-        
+
         Ok(())
     }
 }

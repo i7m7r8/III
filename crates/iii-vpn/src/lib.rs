@@ -40,7 +40,7 @@ impl VpnController {
         let dev = TunInterface::create("iii0", "10.0.0.1", "255.255.255.0")
             .await
             .context("Failed to create TUN interface")?;
-        
+
         // 3. Start Router
         let router = router::Router::new(dev);
         tokio::spawn(async move {

@@ -1,11 +1,11 @@
 use anyhow::{Context, Result};
-use windows::Win32::Foundation::*;
-use windows::Win32::NetworkManagement::WindowsFilteringPlatform::*;
-use windows::Win32::Security::PSECURITY_DESCRIPTOR;
-use windows::Win32::Networking::WinSock::*;
 use std::net::Ipv4Addr;
 use std::str::FromStr;
-use tracing::{info, error};
+use tracing::{error, info};
+use windows::Win32::Foundation::*;
+use windows::Win32::NetworkManagement::WindowsFilteringPlatform::*;
+use windows::Win32::Networking::WinSock::*;
+use windows::Win32::Security::PSECURITY_DESCRIPTOR;
 
 pub async fn enable_wfp_killswitch(relay_ip: &str) -> Result<isize> {
     unsafe {
@@ -15,8 +15,14 @@ pub async fn enable_wfp_killswitch(relay_ip: &str) -> Result<isize> {
             ..Default::default()
         };
 
-        FwpmEngineOpen0(None, RPC_C_AUTHN_WINNT, None, Some(&session), &mut engine_handle)
-            .context("FwpmEngineOpen0 failed")?;
+        FwpmEngineOpen0(
+            None,
+            RPC_C_AUTHN_WINNT,
+            None,
+            Some(&session),
+            &mut engine_handle,
+        )
+        .context("FwpmEngineOpen0 failed")?;
 
         let h_engine = engine_handle;
 
@@ -41,11 +47,13 @@ pub async fn enable_wfp_killswitch(relay_ip: &str) -> Result<isize> {
 
         // 3. Allow Relay IP
         if let Ok(ip) = Ipv4Addr::from_str(relay_ip) {
-            add_allow_ip(h_engine, sublayer_guid, ip).context("Failed to add allow relay IP rule")?;
+            add_allow_ip(h_engine, sublayer_guid, ip)
+                .context("Failed to add allow relay IP rule")?;
         }
 
         // 4. Add "Block All" Filter (Lowest weight in our sublayer)
-        let block_filter_guid = windows::core::GUID::from_u128(0x12345678_1234_1234_1234_123456789013);
+        let block_filter_guid =
+            windows::core::GUID::from_u128(0x12345678_1234_1234_1234_123456789013);
         let block_filter = FWPM_FILTER0 {
             filterKey: block_filter_guid,
             displayData: FWPM_DISPLAY_DATA0 {
@@ -66,8 +74,13 @@ pub async fn enable_wfp_killswitch(relay_ip: &str) -> Result<isize> {
             ..Default::default()
         };
 
-        FwpmFilterAdd0(h_engine, &block_filter, PSECURITY_DESCRIPTOR::default(), None)
-            .context("FwpmFilterAdd0 failed (Block All)")?;
+        FwpmFilterAdd0(
+            h_engine,
+            &block_filter,
+            PSECURITY_DESCRIPTOR::default(),
+            None,
+        )
+        .context("FwpmFilterAdd0 failed (Block All)")?;
 
         info!("WFP killswitch enabled for relay: {}", relay_ip);
         Ok(h_engine.0 as isize)
@@ -85,7 +98,7 @@ pub async fn disable_wfp_killswitch(handle: isize) -> Result<()> {
 
 unsafe fn add_allow_loopback(h_engine: HANDLE, sublayer_guid: windows::core::GUID) -> Result<()> {
     let filter_guid = windows::core::GUID::from_u128(0x12345678_1234_1234_1234_123456789014);
-    
+
     let mut condition = FWPM_FILTER_CONDITION0 {
         fieldKey: FWPM_CONDITION_IP_REMOTE_ADDRESS,
         matchType: FWP_MATCH_EQUAL,
@@ -123,7 +136,11 @@ unsafe fn add_allow_loopback(h_engine: HANDLE, sublayer_guid: windows::core::GUI
     Ok(())
 }
 
-unsafe fn add_allow_ip(h_engine: HANDLE, sublayer_guid: windows::core::GUID, ip: Ipv4Addr) -> Result<()> {
+unsafe fn add_allow_ip(
+    h_engine: HANDLE,
+    sublayer_guid: windows::core::GUID,
+    ip: Ipv4Addr,
+) -> Result<()> {
     let filter_guid = windows::core::GUID::from_u128(0x12345678_1234_1234_1234_123456789015);
     let ip_u32 = u32::from_be_bytes(ip.octets());
 
