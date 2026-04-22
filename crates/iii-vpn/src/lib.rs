@@ -8,9 +8,12 @@ use killswitch::KillSwitch;
 use std::sync::Arc;
 use tracing::info;
 
+use tun_management::{TunDevice, TunInterface};
+
 pub struct VpnController {
     state: Arc<AppState>,
     killswitch: Arc<tokio::sync::Mutex<Option<KillSwitch>>>,
+    tun_device: Arc<tokio::sync::Mutex<Option<TunDevice>>>,
 }
 
 impl VpnController {
@@ -18,6 +21,7 @@ impl VpnController {
         Self {
             state,
             killswitch: Arc::new(tokio::sync::Mutex::new(None)),
+            tun_device: Arc::new(tokio::sync::Mutex::new(None)),
         }
     }
 
@@ -33,21 +37,17 @@ impl VpnController {
         *self.killswitch.lock().await = Some(ks);
 
         // 2. Create TUN Interface
-        #[cfg(target_os = "linux")]
-        {
-            // Use absolute path for the 'tun' crate to avoid shadowing
-            let mut config = ::tun::Configuration::default();
-            config
-                .name("iii0")
-                .address("10.0.0.1")
-                .netmask("255.255.255.0")
-                .up();
-
-            let _dev = ::tun::create(&config).context("Failed to create TUN device")?;
-            info!("TUN device 'iii0' created (10.0.0.1)");
-
-            // Production: Start packet forwarder task here
-        }
+        let dev = TunInterface::create("iii0", "10.0.0.1", "255.255.255.0")
+            .await
+            .context("Failed to create TUN interface")?;
+        
+        // 3. Start Router
+        let router = router::Router::new(dev);
+        tokio::spawn(async move {
+            if let Err(e) = router.run().await {
+                error!("VPN Router failed: {}", e);
+            }
+        });
 
         Ok(())
     }

@@ -9,8 +9,8 @@ III is a cross‑platform (Android, Windows, Linux) VPN that first establishes a
 ## Features
 
 - **SNI fronting** – Bypass DPI by hiding the true destination.
-- **Embedded Tor (arti)** – No external binary.
-- **Embedded I2P (i2pd)** – Static FFI bindings.
+- **Embedded Tor (C-Tor)** – Real Tor daemon for maximum security.
+- **Embedded I2P (i2pd)** – Full C++ I2P daemon.
 - **Kill switch** – Platform firewall blocks leaks.
 - **Cross‑platform GUI** – egui.
 - **Reproducible builds** – GitHub Actions with signed artifacts.

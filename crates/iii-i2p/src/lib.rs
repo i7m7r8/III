@@ -72,10 +72,21 @@ impl I2pInstance {
 
         #[cfg(target_os = "android")]
         let i2pd_bin = {
-            // On Android, we bundle the binary as a shared library or in a specific path
-            // For now, we expect it to be in the same dir as the lib or a known location
-            // A common trick is to name it libi2pd_bin.so to be extracted by Android
-            "i2pd" // Placeholder, should be resolved to absolute path in production
+            // On Android, we search for the bundled binary in known locations
+            let possible_paths = [
+                "/data/local/tmp/i2pd",
+                "crates/iii-i2p/prebuilt/aarch64-linux-android/i2pd",
+                "./i2pd",
+            ];
+            
+            let mut resolved = "i2pd".to_string();
+            for path in &possible_paths {
+                if fs::metadata(path).is_ok() {
+                    resolved = path.to_string();
+                    break;
+                }
+            }
+            resolved
         };
         #[cfg(not(target_os = "android"))]
         let i2pd_bin = "i2pd";

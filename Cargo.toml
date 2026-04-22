@@ -48,8 +48,15 @@ prost = "0.12"
 egui = "0.27"
 eframe = { version = "0.27", features = ["persistence"] }
 egui_dock = "0.10"
-tun = "0.5"
+tun = { version = "0.5", features = ["async"] }
 wintun = "0.3"
+windows = { version = "0.54.0", features = [
+    "Win32_Foundation",
+    "Win32_Security",
+    "Win32_NetworkManagement_WindowsFilteringPlatform",
+    "Win32_System_Memory",
+    "Win32_Networking_WinSock",
+] }
 jni = "0.21"
 netlink-packet-route = "0.19"
 netlink-proto = "0.11"

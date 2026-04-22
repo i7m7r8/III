@@ -1,8 +1,18 @@
 #!/bin/bash
 set -euxo pipefail
 
-git clone https://github.com/PurpleI2P/i2pd.git /tmp/i2pd
+ROOT_DIR=$(pwd)
+git clone --depth 1 https://github.com/PurpleI2P/i2pd.git /tmp/i2pd
 cd /tmp/i2pd
-make static musl
-cp libi2pd.a /workspace/crates/iii-i2p/
-cp libi2pdclient.a /workspace/crates/iii-i2p/
+mkdir -p build_linux && cd build_linux
+
+cmake ../build \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DWITH_UPNP=OFF \
+    -DWITH_AESNI=ON \
+    -DBUILD_STATIC=ON \
+    -DBUILD_SHARED=OFF \
+    -DWITH_LIBRARY=ON
+
+make -j$(nproc)
+cp libi2pd.a libi2pdclient.a "$ROOT_DIR/crates/iii-i2p/"
