@@ -20,6 +20,12 @@ pub enum IIIError {
     #[error("Invalid SNI domain")]
     InvalidSni,
 
-    #[error("Kill switch failed")]
-    KillSwitchFailed,
+    #[error("Kill switch failed: {0}")]
+    KillSwitchFailed(String),
+
+    #[error("Configuration error: {0}")]
+    Config(String),
+
+    #[error("Process already running")]
+    AlreadyRunning,
 }
